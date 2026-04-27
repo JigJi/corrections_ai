@@ -10,6 +10,7 @@ interface SpeechRecognitionResult {
 export function useSpeechRecognition(onResult: (r: SpeechRecognitionResult) => void) {
   const [listening, setListening] = useState(false);
   const [supported, setSupported] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
@@ -17,6 +18,7 @@ export function useSpeechRecognition(onResult: (r: SpeechRecognitionResult) => v
     const SR =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SR) {
+      console.warn("[Corry voice] SpeechRecognition not supported in this browser. Try Chrome or Edge.");
       setSupported(false);
       return;
     }
@@ -27,6 +29,12 @@ export function useSpeechRecognition(onResult: (r: SpeechRecognitionResult) => v
     recognition.continuous = false;
     recognition.interimResults = true;
 
+    recognition.onstart = () => {
+      console.log("[Corry voice] listening started (lang=th-TH)");
+      setError(null);
+      setListening(true);
+    };
+
     recognition.onresult = (event: any) => {
       let transcript = "";
       let isFinal = false;
@@ -34,11 +42,28 @@ export function useSpeechRecognition(onResult: (r: SpeechRecognitionResult) => v
         transcript += event.results[i][0].transcript;
         if (event.results[i].isFinal) isFinal = true;
       }
+      console.log("[Corry voice] transcript:", transcript, "(final:", isFinal, ")");
       onResult({ transcript, isFinal });
     };
 
-    recognition.onend = () => setListening(false);
-    recognition.onerror = () => setListening(false);
+    recognition.onend = () => {
+      console.log("[Corry voice] listening ended");
+      setListening(false);
+    };
+
+    recognition.onerror = (e: any) => {
+      console.error("[Corry voice] error:", e.error, e);
+      const errorMessages: Record<string, string> = {
+        "not-allowed": "ไม่ได้รับสิทธิ์เข้าถึงไมโครโฟน — กดอนุญาตในแถบ URL",
+        "no-speech": "ไม่ได้ยินเสียงพูด ลองพูดอีกครั้งครับ",
+        "audio-capture": "ไม่พบไมโครโฟน — เช็คอุปกรณ์",
+        "network": "ต้องใช้อินเทอร์เน็ต (Web Speech ต้องการ network)",
+        "aborted": "ยกเลิกแล้ว",
+        "service-not-allowed": "Browser ปิดการใช้งาน — เปิดในการตั้งค่า",
+      };
+      setError(errorMessages[e.error] || `เกิดข้อผิดพลาด: ${e.error}`);
+      setListening(false);
+    };
 
     recognitionRef.current = recognition;
 
@@ -51,10 +76,12 @@ export function useSpeechRecognition(onResult: (r: SpeechRecognitionResult) => v
 
   function start() {
     if (!recognitionRef.current || listening) return;
+    setError(null);
     try {
       recognitionRef.current.start();
-      setListening(true);
-    } catch {
+    } catch (e: any) {
+      console.error("[Corry voice] start failed:", e);
+      setError("เริ่มฟังไม่ได้: " + (e?.message ?? "unknown"));
       setListening(false);
     }
   }
@@ -67,7 +94,7 @@ export function useSpeechRecognition(onResult: (r: SpeechRecognitionResult) => v
     setListening(false);
   }
 
-  return { listening, supported, start, stop };
+  return { listening, supported, start, stop, error };
 }
 
 export function speak(text: string) {

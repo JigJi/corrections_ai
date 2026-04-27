@@ -139,6 +139,14 @@ export default function SearchPage() {
             </div>
           </div>
 
+          {voice.error && (
+            <div className="mx-auto max-w-7xl px-6 pt-3">
+              <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700">
+                🎤 {voice.error}
+              </div>
+            </div>
+          )}
+
           <FilterBar
             activeType={activeType}
             onTypeChange={(t) => {
@@ -308,6 +316,11 @@ function HeroSearch({
               >
                 {voice.listening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
               </button>
+            )}
+            {voice.error && (
+              <div className="ml-2 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1 text-[11px] font-medium text-rose-700">
+                {voice.error}
+              </div>
             )}
             <button
               type="submit"
