@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: "IBM Plex Sans Thai", "Sarabun", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html,
+body {
+  background-color: #F6F8FC;
+  color: #0A1632;
+  font-feature-settings: "ss01" on, "cv01" on;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* subtle scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(15, 33, 71, 0.15);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 33, 71, 0.3);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* glassy gradient background for hero */
+.bg-hero {
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(212, 162, 44, 0.12), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(46, 84, 160, 0.18), transparent 60%),
+    linear-gradient(180deg, #FFFFFF 0%, #F6F8FC 100%);
+}
+
+/* shimmer for loading */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, #eef2f8 0%, #f8fafd 50%, #eef2f8 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* nicer focus ring */
+.ring-focus:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(46, 84, 160, 0.18);
+  border-color: #2E54A0;
+}
