@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Image from "next/image";
-import { Search, Sparkles, ArrowRight, Wand2, X } from "lucide-react";
+import { Search, Sparkles, ArrowRight, Wand2, X, Mic, MicOff } from "lucide-react";
 import clsx from "clsx";
+import { useSpeechRecognition } from "@/lib/useVoice";
 import { MOCK_ITEMS, QUICK_QUERIES, type Category, type DocType } from "@/lib/mockData";
 import { ResultCard } from "@/components/ResultCard";
 import { FilterBar } from "@/components/FilterBar";
@@ -16,6 +17,16 @@ export default function SearchPage() {
   const [activeType, setActiveType] = useState<DocType | "all">("all");
   const [activeCategory, setActiveCategory] = useState<Category | "all">("all");
   const [corrySetLabel, setCorrySetLabel] = useState<string | null>(null);
+
+  const handleVoice = useCallback((r: { transcript: string; isFinal: boolean }) => {
+    setQuery(r.transcript);
+    if (r.isFinal && r.transcript.trim()) {
+      setTimeout(() => {
+        setSubmitted(r.transcript.trim());
+      }, 200);
+    }
+  }, []);
+  const voice = useSpeechRecognition(handleVoice);
 
   const filtered = useMemo(() => {
     let items = MOCK_ITEMS;
@@ -53,6 +64,7 @@ export default function SearchPage() {
           setQuery={setQuery}
           onSubmit={submit}
           onOpenChat={() => setChatOpen(true)}
+          voice={voice}
         />
       ) : (
         <div
@@ -63,16 +75,23 @@ export default function SearchPage() {
         >
           <div className="border-b border-navy-100/60 bg-white">
             <div className="mx-auto flex max-w-7xl items-center gap-3 px-6 py-4">
-              <div className="ring-focus flex flex-1 items-center gap-2 rounded-full border border-navy-100 bg-navy-50/40 px-4 py-2.5 transition focus-within:border-navy-400 focus-within:bg-white">
+              <div
+                className={clsx(
+                  "flex flex-1 items-center gap-2 rounded-full border px-4 py-2.5 transition",
+                  voice.listening
+                    ? "border-rose-300 bg-rose-50/40 shadow-[0_0_0_4px_rgba(244,63,94,0.12)]"
+                    : "ring-focus border-navy-100 bg-navy-50/40 focus-within:border-navy-400 focus-within:bg-white"
+                )}
+              >
                 <Search className="h-4 w-4 flex-shrink-0 text-navy-400" />
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && submit(query)}
-                  placeholder="ค้นหาในคลังความรู้กรมราชทัณฑ์..."
+                  placeholder={voice.listening ? "🎤 กำลังฟัง..." : "ค้นหาในคลังความรู้กรมราชทัณฑ์..."}
                   className="flex-1 bg-transparent text-sm outline-none placeholder:text-navy-300"
                 />
-                {query && (
+                {query && !voice.listening && (
                   <button
                     onClick={() => {
                       setQuery("");
@@ -81,6 +100,20 @@ export default function SearchPage() {
                     className="text-xs text-navy-400 hover:text-navy-700"
                   >
                     ล้าง
+                  </button>
+                )}
+                {voice.supported && (
+                  <button
+                    onClick={() => (voice.listening ? voice.stop() : voice.start())}
+                    className={clsx(
+                      "flex h-7 w-7 items-center justify-center rounded-full transition",
+                      voice.listening
+                        ? "bg-rose-500 text-white animate-pulse"
+                        : "text-navy-500 hover:bg-navy-100 hover:text-navy-800"
+                    )}
+                    title={voice.listening ? "หยุดฟัง" : "พูดเพื่อค้นหา"}
+                  >
+                    {voice.listening ? <MicOff className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
                   </button>
                 )}
               </div>
@@ -209,11 +242,13 @@ function HeroSearch({
   setQuery,
   onSubmit,
   onOpenChat,
+  voice,
 }: {
   query: string;
   setQuery: (s: string) => void;
   onSubmit: (s: string) => void;
   onOpenChat: () => void;
+  voice: ReturnType<typeof useSpeechRecognition>;
 }) {
   return (
     <div className="bg-hero">
@@ -232,21 +267,52 @@ function HeroSearch({
           }}
           className="mt-10 w-full"
         >
-          <div className="ring-focus group flex items-center gap-2 rounded-2xl border border-navy-100 bg-white p-2.5 shadow-soft transition focus-within:border-navy-400 focus-within:shadow-glow">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-navy-50 text-navy-500">
+          <div
+            className={clsx(
+              "group flex items-center gap-2 rounded-2xl border bg-white p-2.5 shadow-soft transition",
+              voice.listening
+                ? "border-rose-300 shadow-[0_0_0_4px_rgba(244,63,94,0.15)]"
+                : "ring-focus border-navy-100 focus-within:border-navy-400 focus-within:shadow-glow"
+            )}
+          >
+            <div
+              className={clsx(
+                "flex h-10 w-10 items-center justify-center rounded-xl",
+                voice.listening ? "bg-rose-100 text-rose-600" : "bg-navy-50 text-navy-500"
+              )}
+            >
               <Search className="h-5 w-5" />
             </div>
             <input
               autoFocus
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="ค้นหาอะไรก็ได้... เช่น ระเบียบการเยี่ยมญาติ, การลดวันต้องโทษ"
+              placeholder={
+                voice.listening
+                  ? "🎤 กำลังฟัง... พูดได้เลยครับ"
+                  : "ค้นหาอะไรก็ได้... เช่น ระเบียบการเยี่ยมญาติ, การลดวันต้องโทษ"
+              }
               className="h-10 flex-1 bg-transparent text-base outline-none placeholder:text-navy-300"
             />
+            {voice.supported && (
+              <button
+                type="button"
+                onClick={() => (voice.listening ? voice.stop() : voice.start())}
+                className={clsx(
+                  "flex h-10 w-10 items-center justify-center rounded-xl transition",
+                  voice.listening
+                    ? "bg-rose-500 text-white animate-pulse hover:bg-rose-600"
+                    : "border border-navy-200 bg-white text-navy-600 hover:border-navy-400 hover:bg-navy-50"
+                )}
+                title={voice.listening ? "หยุดฟัง" : "พูดเพื่อค้นหา"}
+              >
+                {voice.listening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+              </button>
+            )}
             <button
               type="submit"
               className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-navy-900 px-5 text-sm font-medium text-white transition hover:bg-navy-800 disabled:opacity-50"
-              disabled={!query.trim()}
+              disabled={!query.trim() || voice.listening}
             >
               ค้นหา
               <ArrowRight className="h-4 w-4" />
