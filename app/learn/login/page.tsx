@@ -14,12 +14,14 @@ import {
   User,
   Fingerprint,
   ChevronRight,
-  Database,
-  Search as SearchIcon,
+  GraduationCap,
+  Award,
+  Monitor,
+  BookOpen,
 } from "lucide-react";
 import { SystemTabs } from "@/components/SystemTabs";
 
-export default function KnowledgeLoginPage() {
+export default function LearnLoginPage() {
   const router = useRouter();
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -30,16 +32,16 @@ export default function KnowledgeLoginPage() {
   function submit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => router.push("/search"), 900);
+    setTimeout(() => router.push("/learn"), 900);
   }
 
   function ssoLogin() {
-    router.push("/search");
+    router.push("/learn");
   }
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      {/* LEFT: Brand panel */}
+      {/* LEFT: Brand panel — same navy theme as Knowledge login */}
       <div className="relative hidden overflow-hidden bg-navy-950 lg:block">
         <div className="absolute inset-0">
           <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-navy-700/40 blur-3xl" />
@@ -81,24 +83,25 @@ export default function KnowledgeLoginPage() {
           <div className="max-w-md">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-gold-200 backdrop-blur">
               <Sparkles className="h-3.5 w-3.5" />
-              ขับเคลื่อนด้วย AI · RAG Search Engine
+              ขับเคลื่อนด้วย AI · Learning Management System
             </div>
             <h1 className="text-4xl font-bold leading-tight tracking-tight">
-              คลังความรู้อัจฉริยะ
+              E-Learning
               <br />
               <span className="bg-gradient-to-r from-gold-300 via-gold-200 to-white bg-clip-text text-transparent">
-                ของกรมราชทัณฑ์
+                ระบบฝึกอบรมกรมราชทัณฑ์
               </span>
             </h1>
             <p className="mt-4 text-base leading-relaxed text-white/70">
-              ระบบสืบค้นเอกสาร ระเบียบ คู่มือ และสื่อการสอนทั้งหมดในกรมฯ
-              <br />ถาม AI เป็นภาษาคน พร้อมอ้างอิงต้นทางทุกคำตอบ
+              หลักสูตรอบรมเจ้าหน้าที่ + ทักษะอาชีพและชีวิตสำหรับผู้เรียน
+              <br />
+              AI ช่วยสอน · auto-quiz · วุฒิบัตรรับรอง
             </p>
 
             <div className="mt-8 grid grid-cols-3 gap-2">
-              <Feature icon={ShieldCheck} title="On-Premise" sub="ข้อมูลไม่ออกนอกกรมฯ" />
-              <Feature icon={SearchIcon} title="Multi-modal" sub="PDF · วิดีโอ · เสียง" />
-              <Feature icon={Database} title="Permission" sub="แยกชั้นความลับ" />
+              <Feature icon={Sparkles} title="AI Tutor" sub="สอน-ตอบ-สรุปบทเรียน" />
+              <Feature icon={Award} title="วุฒิบัตร" sub="รับรองโดยกรมพัฒนาฝีมือฯ" />
+              <Feature icon={Monitor} title="Kiosk-ready" sub="ใช้ใน tablet ห้องเรียน" />
             </div>
           </div>
 
@@ -124,28 +127,28 @@ export default function KnowledgeLoginPage() {
             </div>
           </div>
 
-          <SystemTabs active="knowledge" />
+          <SystemTabs active="learn" />
 
           <div className="rounded-3xl border border-navy-100 bg-white/90 p-8 shadow-2xl backdrop-blur-sm">
             <div className="mb-6">
               <div className="text-xs font-medium uppercase tracking-wider text-gold-600">
-                Knowledge Platform · Sign in
+                E-Learning · Sign in
               </div>
               <h2 className="mt-1 text-2xl font-bold tracking-tight text-navy-900">
-                เข้าสู่คลังความรู้
+                เข้าสู่ระบบฝึกอบรม
               </h2>
               <p className="mt-1 text-sm text-navy-500">
-                สำหรับเจ้าหน้าที่ผู้ได้รับสิทธิ์เข้าถึง
+                สำหรับเจ้าหน้าที่และผู้เรียนที่ลงทะเบียนแล้ว
               </p>
             </div>
 
             <form onSubmit={submit} className="space-y-4">
-              <Field label="เลขประจำตัวข้าราชการ / อีเมล" icon={User}>
+              <Field label="เลขประจำตัวผู้เรียน / ข้าราชการ" icon={User}>
                 <input
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="3xxxxxxxxxxxx หรือ user@correct.go.th"
+                  placeholder="61-0247 หรือ staff@correct.go.th"
                   className="w-full bg-transparent py-2 text-sm outline-none placeholder:text-navy-300"
                 />
               </Field>
@@ -198,7 +201,7 @@ export default function KnowledgeLoginPage() {
                   </>
                 ) : (
                   <>
-                    เข้าสู่คลังความรู้
+                    เข้าสู่ E-Learning
                     <ChevronRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
                   </>
                 )}
@@ -219,14 +222,22 @@ export default function KnowledgeLoginPage() {
                 <Fingerprint className="h-4 w-4 text-gold-600" />
                 เข้าด้วย ThaID / SSO ราชการ
               </button>
+
+              {/* Kiosk shortcut */}
+              <Link
+                href="/inmate/login"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-navy-300 bg-navy-50/40 py-2.5 text-sm font-medium text-navy-700 transition hover:bg-navy-50"
+              >
+                <Monitor className="h-4 w-4 text-gold-600" />
+                เข้าใช้งานแบบ Kiosk (ห้องเรียน)
+              </Link>
             </form>
 
-            <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-2.5">
-              <div className="flex items-start gap-2 text-[11px] text-amber-900">
-                <ShieldCheck className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" />
+            <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5">
+              <div className="flex items-start gap-2 text-[11px] text-emerald-900">
+                <BookOpen className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" />
                 <span>
-                  การเข้าถึงระบบนี้ถูกบันทึกและตรวจสอบ ตาม พ.ร.บ.การรักษาความมั่นคงปลอดภัยไซเบอร์
-                  พ.ศ. 2562
+                  ทุกการเรียนสะสมเป็นวุฒิบัตร ใช้เป็นหลักฐานสมัครงานและพัฒนาทักษะ
                 </span>
               </div>
             </div>
@@ -235,7 +246,7 @@ export default function KnowledgeLoginPage() {
           <div className="mt-5 text-center text-[11px] text-navy-400">
             พบปัญหา? ติดต่อ{" "}
             <Link href="#" className="font-medium text-navy-700 hover:underline">
-              ศูนย์เทคโนโลยีสารสนเทศ
+              ศูนย์ฝึกอบรมราชทัณฑ์
             </Link>{" "}
             · โทร 02-XXX-XXXX
           </div>
@@ -282,3 +293,5 @@ function Feature({
     </div>
   );
 }
+
+const _GraduationCap = GraduationCap; // kept import for potential branding tweaks

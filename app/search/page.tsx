@@ -298,7 +298,7 @@ function HeroSearch({
               placeholder={
                 voice.listening
                   ? "🎤 กำลังฟัง... พูดได้เลยครับ"
-                  : "ค้นหาอะไรก็ได้... เช่น ระเบียบการเยี่ยมญาติ, การลดวันต้องโทษ"
+                  : "ค้นหาอะไรก็ได้... เช่น ระเบียบการเยี่ยมญาติ, คู่มือผู้คุม"
               }
               className="h-10 flex-1 bg-transparent text-base outline-none placeholder:text-navy-300"
             />

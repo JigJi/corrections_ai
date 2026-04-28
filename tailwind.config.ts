@@ -4,6 +4,14 @@ export default {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./lib/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  safelist: [
+    // course color gradients are stored as strings in lib/lmsData.ts —
+    // ensure all variants used there are emitted in case Tailwind misses them
+    { pattern: /^from-(rose|orange|navy|purple|pink|emerald|teal|amber|yellow|red|sky|blue|lime|green|stone|zinc|violet|fuchsia|indigo|cyan|gold)-(400|500|600|700|800)$/ },
+    { pattern: /^to-(rose|orange|navy|purple|pink|emerald|teal|amber|yellow|red|sky|blue|lime|green|stone|zinc|violet|fuchsia|indigo|cyan|gold)-(400|500|600|700|800)$/ },
+    { pattern: /^via-(rose|orange|navy|purple|pink|emerald|teal|amber|yellow|red|sky|blue|lime|green|stone|zinc|violet|fuchsia|indigo|cyan|gold)-(400|500|600|700|800)$/ },
   ],
   theme: {
     extend: {
