@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
@@ -366,6 +366,21 @@ const CATEGORIES = [
 // =============== Page ===============
 
 export default function NewCoursePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center py-20 text-sm text-navy-500">
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          กำลังโหลด...
+        </div>
+      }
+    >
+      <NewCourseForm />
+    </Suspense>
+  );
+}
+
+function NewCourseForm() {
   const router = useRouter();
   const params = useSearchParams();
   const draftId = params.get("id");
