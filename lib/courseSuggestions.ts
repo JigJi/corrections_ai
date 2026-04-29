@@ -55,7 +55,7 @@ export const COURSE_SUGGESTIONS: CourseSuggestion[] = [
       { title: "แบบทดสอบ + ส่งงานจริง", kind: "quiz", duration: "30 นาที" },
     ],
     coverUrl:
-      "https://images.unsplash.com/photo-1684163342929-a5da4d8ae87c?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=1200&q=80",
     relatedKnowledgeIds: [],
   },
 
